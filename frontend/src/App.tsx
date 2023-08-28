@@ -5,7 +5,7 @@ import Routers from './routers/Routers'
 export default function App() {
   return (
     <div>
-      <div className="m-4 mx-auto w-96 rounded-lg shadow-lg">
+      <div className="m-4 mx-auto w-96 rounded-lg bg-white shadow-lg">
         <Header />
         <Routers />
       </div>
