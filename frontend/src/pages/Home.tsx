@@ -16,7 +16,7 @@ export default function Home() {
           <MessageCard
             key={message.id}
             content={message.content}
-            sender="user"
+            sender={message.sender}
           />
         ))}
       </div>
