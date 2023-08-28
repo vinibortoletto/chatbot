@@ -3,7 +3,7 @@ import profilePicture from '../assets/profile.jpg'
 
 export default function ChatHeader() {
   return (
-    <section className="grid grid-cols-[1fr,3fr] gap-4 border-b py-6">
+    <section className="grid grid-cols-[1fr,3fr] gap-4 border-b p-4">
       <div>
         <img
           className="h-20 w-20 rounded-full object-cover"

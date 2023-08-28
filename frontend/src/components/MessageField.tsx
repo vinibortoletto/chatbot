@@ -3,7 +3,7 @@ import { IoMdSend } from 'react-icons/io'
 
 export default function MessageField() {
   return (
-    <div className="-mx-4 my-2 flex items-center justify-between gap-4 border-t  px-4 py-2">
+    <div className="absolute bottom-0 my-2 flex w-full items-center justify-between gap-4 border-t  px-4 py-2">
       <div className="w-full">
         <label htmlFor="message-field" className="sr-only">
           Message
