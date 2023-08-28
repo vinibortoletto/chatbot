@@ -9,7 +9,7 @@ export default function Home() {
     <div className="rounded-b-lg">
       <ChatHeader />
 
-      <div className="flex h-[22.4rem] flex-col gap-1 overflow-y-scroll p-4">
+      <div className="flex h-96 flex-col gap-1 overflow-y-scroll p-4">
         <ChatTime />
 
         <MessageCard
