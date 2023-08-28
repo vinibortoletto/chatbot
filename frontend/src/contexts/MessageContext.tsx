@@ -43,7 +43,7 @@ export function MessageProvider({ children }: IProps) {
   const [chat, setChat] = useState<IChat>(defaultChatValues)
   const [chatHistory, setChatHistory] = useState<IChat[]>([])
 
-  const triggerWords = useMemo(() => ['hello', 'good', 'i want'], [])
+  const triggerWords = useMemo(() => ['hello', 'good', 'goodbye', 'i want'], [])
 
   const companyMessages = useMemo(
     () => ({
@@ -54,14 +54,55 @@ export function MessageProvider({ children }: IProps) {
     []
   )
 
-  const createMessageObject = (sender: TSender, content: string): IMessage => {
-    return {
-      id: uuidv4(),
-      content,
-      createdAt: new Date(),
-      sender
-    }
-  }
+  const createMessageObject = useCallback(
+    (sender: TSender, content: string): IMessage => {
+      return {
+        id: uuidv4(),
+        content,
+        createdAt: new Date(),
+        sender
+      }
+    },
+    []
+  )
+
+  const handleGoodByeMessage = useCallback(
+    (newChat: IChat) => {
+      newChat.messages.push(
+        createMessageObject('company', 'Goodbye, have a nice day!'),
+        createMessageObject(
+          'company',
+          'If you want to talk again, you can create a new chat!'
+        )
+      )
+
+      setChatHistory([...chatHistory, newChat])
+
+      handleLocalStorage.set('chatHistory', [
+        ...chatHistory,
+        newChat
+      ] as IChat[])
+
+      setChat(newChat)
+      handleLocalStorage.set('chat', newChat)
+      return
+    },
+    [chatHistory, createMessageObject]
+  )
+
+  const hasTriggerWord = useCallback((): boolean => {
+    return triggerWords.some((triggerWord) => {
+      if (message.toLowerCase().includes('i want')) {
+        return true
+      }
+
+      return message.split(' ').some((messageWord) => {
+        if (messageWord.toLowerCase() === triggerWord) {
+          return true
+        }
+      })
+    })
+  }, [message, triggerWords])
 
   const createNewMessage = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
@@ -71,11 +112,15 @@ export function MessageProvider({ children }: IProps) {
       newChat.messages.push(createMessageObject('user', message))
       setMessage('')
 
-      const hasTriggerWord = triggerWords.some((word) =>
-        message.toLowerCase().includes(word)
-      )
+      const hasGoodbye = message.split(' ').some((messageWord) => {
+        if (messageWord.toLowerCase().includes('goodbye')) {
+          return true
+        }
+      })
 
-      if (hasTriggerWord) {
+      if (hasGoodbye) return handleGoodByeMessage(newChat)
+
+      if (hasTriggerWord()) {
         newChat.messages.push(
           createMessageObject('company', companyMessages.askUsername)
         )
@@ -85,27 +130,18 @@ export function MessageProvider({ children }: IProps) {
         )
       }
 
-      if (message.toLowerCase().includes('goodbye')) {
-        newChat.messages.push(
-          createMessageObject('company', 'Goodbye, have a nice day!'),
-          createMessageObject(
-            'company',
-            'If you want to talk again, you can create a new chat!'
-          )
-        )
-
-        setChatHistory([...chatHistory, newChat])
-
-        handleLocalStorage.set('chatHistory', [
-          ...chatHistory,
-          newChat
-        ] as IChat[])
-      }
-
       setChat(newChat)
       handleLocalStorage.set('chat', newChat)
     },
-    [chat, companyMessages, message, triggerWords]
+    [
+      chat,
+      companyMessages.askUsername,
+      companyMessages.wrongMessage,
+      createMessageObject,
+      handleGoodByeMessage,
+      hasTriggerWord,
+      message
+    ]
   )
 
   const value: IContext = useMemo(
