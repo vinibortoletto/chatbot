@@ -35,9 +35,11 @@ export const MessageContext = createContext(defaultValues)
 export function MessageProvider({ children }: IProps) {
   const [message, setMessage] = useState('')
   const [messageList, setMessageList] = useState<IMessage[]>([])
+  const triggerWordList = ['hello', 'goodbye', 'good', 'i want']
 
   const createNewMessage = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
+      const chatId = messageList[0].chatId || uuidv4()
       event.preventDefault()
 
       const newMessage: IMessage = {
@@ -46,15 +48,40 @@ export function MessageProvider({ children }: IProps) {
         createdAt: new Date(),
         sender: 'user',
         userId: 'user id',
-        chatId: 'chat id'
+        chatId
       }
 
       const newMessageList = [...messageList, newMessage]
+
+      const hasTriggerWord = triggerWordList.some((word) =>
+        newMessage.content.toLowerCase().includes(word)
+      )
+
+      if (hasTriggerWord) {
+        newMessageList.push({
+          id: uuidv4(),
+          content: `Before we continue, what should I call you?`,
+          createdAt: new Date(),
+          sender: 'company',
+          userId: null,
+          chatId
+        })
+      } else {
+        newMessageList.push({
+          id: uuidv4(),
+          content: `I'm sorry, but I don't understand.`,
+          createdAt: new Date(),
+          sender: 'company',
+          userId: null,
+          chatId
+        })
+      }
+
       setMessageList(newMessageList)
-      handleLocalStorage.set('messageList', newMessageList)
       setMessage('')
+      handleLocalStorage.set('messageList', newMessageList)
     },
-    [message, messageList]
+    [message, setMessage]
   )
 
   const value: IContext = useMemo(
