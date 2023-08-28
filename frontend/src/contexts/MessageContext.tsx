@@ -41,8 +41,9 @@ export const MessageContext = createContext(defaultValues)
 export function MessageProvider({ children }: IProps) {
   const [message, setMessage] = useState('')
   const [chat, setChat] = useState<IChat>(defaultChatValues)
+  const [chatHistory, setChatHistory] = useState<IChat[]>([])
 
-  const triggerWords = useMemo(() => ['hello', 'goodbye', 'good', 'i want'], [])
+  const triggerWords = useMemo(() => ['hello', 'good', 'i want'], [])
 
   const companyMessages = useMemo(
     () => ({
@@ -82,6 +83,23 @@ export function MessageProvider({ children }: IProps) {
         newChat.messages.push(
           createMessageObject('company', companyMessages.wrongMessage)
         )
+      }
+
+      if (message.toLowerCase().includes('goodbye')) {
+        newChat.messages.push(
+          createMessageObject('company', 'Goodbye, have a nice day!'),
+          createMessageObject(
+            'company',
+            'If you want to talk again, you can create a new chat!'
+          )
+        )
+
+        setChatHistory([...chatHistory, newChat])
+
+        handleLocalStorage.set('chatHistory', [
+          ...chatHistory,
+          newChat
+        ] as IChat[])
       }
 
       setChat(newChat)
