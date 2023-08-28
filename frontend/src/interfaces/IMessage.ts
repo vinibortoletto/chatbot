@@ -3,6 +3,4 @@ export default interface IMessage {
   content: string
   createdAt: Date
   sender: 'company' | 'user'
-  userId: string | null
-  chatId: string
 }

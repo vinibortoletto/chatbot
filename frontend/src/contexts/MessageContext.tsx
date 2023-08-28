@@ -6,9 +6,10 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { IMessage } from '../interfaces'
+import { IChat, IMessage } from '../interfaces'
 import { v4 as uuidv4 } from 'uuid'
-import { handleLocalStorage } from '../utils'
+import { deepCopyObject, handleLocalStorage } from '../utils'
+import { TSender } from '../types'
 
 interface IProps {
   children: React.ReactNode
@@ -16,110 +17,118 @@ interface IProps {
 
 interface IContext {
   message: string
+  chat: IChat
   setMessage: (message: string) => void
-  messageList: IMessage[]
-  setMessageList: (messageList: IMessage[]) => void
   createNewMessage: (event: FormEvent<HTMLFormElement>) => void
 }
 
 const defaultValues: IContext = {
   message: '',
+  chat: {} as IChat,
   setMessage: () => {},
-  messageList: [] as IMessage[],
-  setMessageList: () => {},
   createNewMessage: () => {}
+}
+
+const defaultChatValues: IChat = {
+  id: '',
+  messages: [] as IMessage[],
+  createdAt: new Date(),
+  userId: ''
 }
 
 export const MessageContext = createContext(defaultValues)
 
 export function MessageProvider({ children }: IProps) {
   const [message, setMessage] = useState('')
-  const [messageList, setMessageList] = useState<IMessage[]>([])
-  const triggerWordList = ['hello', 'goodbye', 'good', 'i want']
+  const [chat, setChat] = useState<IChat>(defaultChatValues)
+
+  const triggerWords = useMemo(() => ['hello', 'goodbye', 'good', 'i want'], [])
+
+  const companyMessages = useMemo(
+    () => ({
+      askUsername: 'Before we continue, please enter your username.',
+      askPassword: 'Great! Now please enter your password.',
+      wrongMessage: `I'm sorry, but I don't understand.`
+    }),
+    []
+  )
+
+  const createMessageObject = (sender: TSender, content: string): IMessage => {
+    return {
+      id: uuidv4(),
+      content,
+      createdAt: new Date(),
+      sender
+    }
+  }
 
   const createNewMessage = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
-      const chatId = messageList[0].chatId || uuidv4()
       event.preventDefault()
+      const newChat = deepCopyObject(chat)
 
-      const newMessage: IMessage = {
-        id: uuidv4(),
-        content: message,
-        createdAt: new Date(),
-        sender: 'user',
-        userId: 'user id',
-        chatId
-      }
+      newChat.messages.push(createMessageObject('user', message))
+      setMessage('')
 
-      const newMessageList = [...messageList, newMessage]
-
-      const hasTriggerWord = triggerWordList.some((word) =>
-        newMessage.content.toLowerCase().includes(word)
+      const hasTriggerWord = triggerWords.some((word) =>
+        message.toLowerCase().includes(word)
       )
 
       if (hasTriggerWord) {
-        newMessageList.push({
-          id: uuidv4(),
-          content: `Before we continue, what should I call you?`,
-          createdAt: new Date(),
-          sender: 'company',
-          userId: null,
-          chatId
-        })
+        newChat.messages.push(
+          createMessageObject('company', companyMessages.askUsername)
+        )
       } else {
-        newMessageList.push({
-          id: uuidv4(),
-          content: `I'm sorry, but I don't understand.`,
-          createdAt: new Date(),
-          sender: 'company',
-          userId: null,
-          chatId
-        })
+        newChat.messages.push(
+          createMessageObject('company', companyMessages.wrongMessage)
+        )
       }
 
-      setMessageList(newMessageList)
-      setMessage('')
-      handleLocalStorage.set('messageList', newMessageList)
+      setChat(newChat)
+      handleLocalStorage.set('chat', newChat)
     },
-    [message, setMessage]
+    [chat, companyMessages, message, triggerWords]
   )
 
   const value: IContext = useMemo(
     () => ({
       message,
       setMessage,
-      messageList,
-      setMessageList,
-      createNewMessage
+      createNewMessage,
+      chat
     }),
-    [message, setMessage, messageList, setMessageList, createNewMessage]
+    [message, setMessage, createNewMessage, chat]
   )
 
-  const createWelcomeMessage = useCallback((): void => {
+  const createNewChat = useCallback((): void => {
     const welcomeMessage: IMessage = {
       id: uuidv4(),
       content: `Hello, I'm Claire! How can I help you today?`,
       createdAt: new Date(),
-      sender: 'company',
-      userId: null,
-      chatId: uuidv4()
+      sender: 'company'
     }
 
-    const newMessageList = [...messageList, welcomeMessage]
-    setMessageList(newMessageList)
-    handleLocalStorage.set('messageList', newMessageList)
+    const newChat = {
+      id: uuidv4(),
+      messages: [welcomeMessage],
+      createdAt: new Date(),
+      userId: 'user id'
+    }
+
+    setChat(newChat)
+    handleLocalStorage.set('chat', newChat)
   }, [])
 
   useEffect(() => {
-    const localMessageList = handleLocalStorage.get('messageList') as IMessage[]
+    const localChat = handleLocalStorage.get('chat') as IChat
 
-    if (localMessageList) {
-      setMessageList(localMessageList)
+    if (localChat) {
+      setChat(localChat)
       return
     }
 
-    createWelcomeMessage()
-  }, [])
+    createNewChat()
+  }, [createNewChat])
 
   return (
     <MessageContext.Provider value={value}>{children}</MessageContext.Provider>
