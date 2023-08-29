@@ -6,10 +6,10 @@ import React, {
   useMemo,
   useState
 } from 'react'
-import { IChat, IMessage } from '../interfaces'
 import { v4 as uuidv4 } from 'uuid'
-import { deepCopyObject, handleLocalStorage } from '../utils'
+import { IChat, IMessage } from '../interfaces'
 import { TSender } from '../types'
+import { deepCopyObject, handleLocalStorage } from '../utils'
 
 interface IProps {
   children: React.ReactNode
@@ -18,15 +18,19 @@ interface IProps {
 interface IContext {
   message: string
   chat: IChat
+  isChatting: boolean
   setMessage: (message: string) => void
   createNewMessage: (event: FormEvent<HTMLFormElement>) => void
+  setIsChatting: (isChatting: boolean) => void
 }
 
 const defaultValues: IContext = {
   message: '',
   chat: {} as IChat,
+  isChatting: true,
   setMessage: () => {},
-  createNewMessage: () => {}
+  createNewMessage: () => {},
+  setIsChatting: () => {}
 }
 
 const defaultChatValues: IChat = {
@@ -42,6 +46,7 @@ export function MessageProvider({ children }: IProps) {
   const [message, setMessage] = useState('')
   const [chat, setChat] = useState<IChat>(defaultChatValues)
   const [chatHistory, setChatHistory] = useState<IChat[]>([])
+  const [isChatting, setIsChatting] = useState(true)
 
   const triggerWords = useMemo(() => ['hello', 'good', 'goodbye', 'i want'], [])
 
@@ -83,8 +88,9 @@ export function MessageProvider({ children }: IProps) {
         newChat
       ] as IChat[])
 
+      setIsChatting(false)
       setChat(newChat)
-      handleLocalStorage.set('chat', newChat)
+      handleLocalStorage.remove('chat')
       return
     },
     [chatHistory, createMessageObject]
@@ -147,11 +153,13 @@ export function MessageProvider({ children }: IProps) {
   const value: IContext = useMemo(
     () => ({
       message,
+      chat,
+      isChatting,
       setMessage,
       createNewMessage,
-      chat
+      setIsChatting
     }),
-    [message, setMessage, createNewMessage, chat]
+    [message, setMessage, createNewMessage, chat, isChatting, setIsChatting]
   )
 
   const createNewChat = useCallback((): void => {
