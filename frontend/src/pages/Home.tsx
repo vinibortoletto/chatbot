@@ -5,16 +5,16 @@ import { MessageContext } from '../contexts/MessageContext'
 import MessageCard from '../components/MessageCard'
 
 export default function Home() {
-  const { chat } = useContext(MessageContext)
+  const { chat, isChatting } = useContext(MessageContext)
   const scrollableDivRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (!scrollableDivRef.current) return
     scrollableDivRef.current.scrollTop = scrollableDivRef.current.scrollHeight
-  }, [chat.messages])
+  }, [chat])
 
   return (
-    <div className="rounded-b-lg">
+    <main className="rounded-b-lg">
       <ChatHeader />
 
       <div
@@ -30,7 +30,27 @@ export default function Home() {
         ))}
       </div>
 
+      <div className="flex justify-center gap-2 p-4">
+        {!isChatting && (
+          <>
+            <button
+              type="button"
+              className="rounded-lg border border-sky-500 p-2 text-sky-500 transition hover:bg-sky-500/10"
+            >
+              See chat history
+            </button>
+
+            <button
+              type="button"
+              className="rounded-lg border border-sky-500 p-2 text-sky-500 transition hover:bg-sky-500/10"
+            >
+              Start new chat
+            </button>
+          </>
+        )}
+      </div>
+
       <MessageField />
-    </div>
+    </main>
   )
 }
