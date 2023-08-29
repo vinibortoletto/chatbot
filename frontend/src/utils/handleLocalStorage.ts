@@ -8,9 +8,14 @@ const get = (key: string): unknown => {
   return JSON.parse(value)
 }
 
+const remove = (key: string): void => {
+  localStorage.removeItem(key)
+}
+
 const handleLocalStorage = {
   set,
-  get
+  get,
+  remove
 }
 
 export default handleLocalStorage
