@@ -1,7 +1,7 @@
-import Header from 'components/Header'
 import React from 'react'
 import Routers from './routers/Routers'
 import { MessageProvider } from './contexts/MessageContext'
+import { Header } from './components'
 
 export default function App() {
   return (

@@ -1,9 +1,6 @@
 import React, { useContext, useEffect, useRef } from 'react'
-import ChatHeader from '../components/ChatHeader'
-import MessageField from '../components/MessageField'
 import { MessageContext } from '../contexts/MessageContext'
-import MessageCard from '../components/MessageCard'
-import Button from '../components/Button'
+import { Button, ChatHeader, MessageCard, MessageField } from '../components'
 
 export default function Home() {
   const { chat, isChatting } = useContext(MessageContext)
