@@ -30,7 +30,7 @@ export default function ChatHistory() {
           </h2>
         </div>
 
-        <div className="p-4">
+        <div className="h-[71vh] overflow-y-scroll  p-4">
           {chatHistory.length === 0 && (
             <div className="text-center">
               <h3 className="text-lg font-bold">No chat history</h3>
