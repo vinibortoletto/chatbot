@@ -1,12 +1,30 @@
-import React, { useContext, useEffect } from 'react'
-import { MessageContext } from '../contexts/MessageContext'
+import { useContext } from 'react'
+import CsvDownloader from 'react-csv-downloader'
 import { FaFileCsv } from 'react-icons/fa'
-import { Button } from '../components'
 import { useNavigate } from 'react-router-dom'
+import { Button } from '../components'
+import { MessageContext } from '../contexts/MessageContext'
 
 export default function ChatHistory() {
   const { chatHistory, startNewChat } = useContext(MessageContext)
   const navigate = useNavigate()
+
+  const formatToCSV = (id: string) => {
+    const selectedChat = chatHistory.find((chat) => chat.id === id)
+
+    if (!selectedChat) return []
+
+    const formattedCreatedAt = new Date(selectedChat.createdAt).toISOString()
+
+    const data = selectedChat.messages.map((message) => ({
+      content: `"${message.content}"`,
+      createdAt: formattedCreatedAt,
+      id: message.id,
+      sender: message.sender
+    }))
+
+    return data
+  }
 
   const formatDate = (date: Date): string => {
     const newDate = new Date(date)
@@ -58,9 +76,14 @@ export default function ChatHistory() {
                 <span>{formatDate(chat.createdAt)}</span>
 
                 <span>
-                  <button type="button">
-                    <FaFileCsv fill={'rgb(14 165 233)'} size={20} />
-                  </button>
+                  <CsvDownloader
+                    datas={() => formatToCSV(chat.id)}
+                    filename="chat-history"
+                  >
+                    <button type="button">
+                      <FaFileCsv fill={'rgb(14 165 233)'} size={20} />
+                    </button>
+                  </CsvDownloader>
                 </span>
               </li>
             ))}
