@@ -24,7 +24,6 @@ interface IContext {
   createNewMessage: (event: FormEvent<HTMLFormElement>) => void
   setIsChatting: (isChatting: boolean) => void
   setChat: (chat: IChat) => void
-  goToChatHistory: () => void
   startNewChat: () => void
   chatHistory: IChat[]
 }
@@ -37,7 +36,6 @@ const defaultValues: IContext = {
   createNewMessage: () => {},
   setIsChatting: () => {},
   setChat: () => {},
-  goToChatHistory: () => {},
   startNewChat: () => {},
   chatHistory: []
 }
@@ -182,19 +180,6 @@ export function MessageProvider({ children }: IProps) {
     handleLocalStorage.set('chat', newChat)
   }, [])
 
-  const goToChatHistory = useCallback(() => {
-    navigate('/chat-history')
-
-    setChat({
-      id: '',
-      messages: [] as IMessage[],
-      createdAt: new Date(),
-      userId: ''
-    })
-
-    setIsChatting(true)
-  }, [navigate])
-
   const startNewChat = useCallback((): void => {
     setIsChatting(true)
     createNewChat()
@@ -233,7 +218,6 @@ export function MessageProvider({ children }: IProps) {
       createNewMessage,
       setIsChatting,
       setChat,
-      goToChatHistory,
       startNewChat,
       chatHistory
     }),
@@ -245,7 +229,6 @@ export function MessageProvider({ children }: IProps) {
       createNewMessage,
       setIsChatting,
       setChat,
-      goToChatHistory,
       startNewChat,
       chatHistory
     ]

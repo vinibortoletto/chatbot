@@ -1,10 +1,11 @@
 import { useContext, useEffect, useRef } from 'react'
 import { Button, ChatHeader, MessageCard, MessageField } from '../components'
 import { MessageContext } from '../contexts/MessageContext'
+import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
-  const { chat, isChatting, goToChatHistory, startNewChat } =
-    useContext(MessageContext)
+  const navigate = useNavigate()
+  const { chat, isChatting, startNewChat } = useContext(MessageContext)
   const scrollableDivRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -34,7 +35,10 @@ export default function Home() {
       <div>
         {!isChatting && (
           <div className="flex justify-center gap-2 py-2">
-            <Button text="See chat history" onClick={goToChatHistory} />
+            <Button
+              text="See chat history"
+              onClick={() => navigate('/chat-history')}
+            />
             <Button text="Start new chat" onClick={startNewChat} />
           </div>
         )}
