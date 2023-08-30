@@ -1,9 +1,9 @@
-import React, { useContext, useEffect, useRef } from 'react'
-import { MessageContext } from '../contexts/MessageContext'
+import { useContext, useEffect, useRef } from 'react'
 import { Button, ChatHeader, MessageCard, MessageField } from '../components'
+import { MessageContext } from '../contexts/MessageContext'
 
 export default function Home() {
-  const { chat, isChatting } = useContext(MessageContext)
+  const { chat, isChatting, goToChatHistory } = useContext(MessageContext)
   const scrollableDivRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -31,7 +31,7 @@ export default function Home() {
       <div className="flex justify-center gap-2 p-4">
         {!isChatting && (
           <>
-            <Button text="See chat history" />
+            <Button text="See chat history" onClick={goToChatHistory} />
             <Button text="Start new chat" />
           </>
         )}

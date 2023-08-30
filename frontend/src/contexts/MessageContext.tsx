@@ -10,6 +10,7 @@ import { v4 as uuidv4 } from 'uuid'
 import { IChat, IMessage } from '../interfaces'
 import { TSender } from '../types'
 import { deepCopyObject, handleLocalStorage } from '../utils'
+import { useNavigate } from 'react-router-dom'
 
 interface IProps {
   children: React.ReactNode
@@ -22,6 +23,8 @@ interface IContext {
   setMessage: (message: string) => void
   createNewMessage: (event: FormEvent<HTMLFormElement>) => void
   setIsChatting: (isChatting: boolean) => void
+  setChat: (chat: IChat) => void
+  goToChatHistory: () => void
 }
 
 const defaultValues: IContext = {
@@ -30,7 +33,9 @@ const defaultValues: IContext = {
   isChatting: true,
   setMessage: () => {},
   createNewMessage: () => {},
-  setIsChatting: () => {}
+  setIsChatting: () => {},
+  setChat: () => {},
+  goToChatHistory: () => {}
 }
 
 const defaultChatValues: IChat = {
@@ -43,6 +48,8 @@ const defaultChatValues: IChat = {
 export const MessageContext = createContext(defaultValues)
 
 export function MessageProvider({ children }: IProps) {
+  const navigate = useNavigate()
+
   const [message, setMessage] = useState('')
   const [chat, setChat] = useState<IChat>(defaultChatValues)
   const [chatHistory, setChatHistory] = useState<IChat[]>([])
@@ -150,18 +157,6 @@ export function MessageProvider({ children }: IProps) {
     ]
   )
 
-  const value: IContext = useMemo(
-    () => ({
-      message,
-      chat,
-      isChatting,
-      setMessage,
-      createNewMessage,
-      setIsChatting
-    }),
-    [message, setMessage, createNewMessage, chat, isChatting, setIsChatting]
-  )
-
   const createNewChat = useCallback((): void => {
     const welcomeMessage: IMessage = {
       id: uuidv4(),
@@ -181,6 +176,19 @@ export function MessageProvider({ children }: IProps) {
     handleLocalStorage.set('chat', newChat)
   }, [])
 
+  const goToChatHistory = useCallback(() => {
+    navigate('/chat-history')
+
+    setChat({
+      id: '',
+      messages: [] as IMessage[],
+      createdAt: new Date(),
+      userId: ''
+    })
+
+    setIsChatting(true)
+  }, [navigate])
+
   useEffect(() => {
     const localChat = handleLocalStorage.get('chat') as IChat
 
@@ -191,6 +199,29 @@ export function MessageProvider({ children }: IProps) {
 
     createNewChat()
   }, [createNewChat])
+
+  const value: IContext = useMemo(
+    () => ({
+      message,
+      chat,
+      isChatting,
+      setMessage,
+      createNewMessage,
+      setIsChatting,
+      setChat,
+      goToChatHistory
+    }),
+    [
+      message,
+      chat,
+      isChatting,
+      setMessage,
+      createNewMessage,
+      setIsChatting,
+      setChat,
+      goToChatHistory
+    ]
+  )
 
   return (
     <MessageContext.Provider value={value}>{children}</MessageContext.Provider>
