@@ -3,7 +3,8 @@ import { Button, ChatHeader, MessageCard, MessageField } from '../components'
 import { MessageContext } from '../contexts/MessageContext'
 
 export default function Home() {
-  const { chat, isChatting, goToChatHistory } = useContext(MessageContext)
+  const { chat, isChatting, goToChatHistory, startNewChat } =
+    useContext(MessageContext)
   const scrollableDivRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -32,7 +33,7 @@ export default function Home() {
         {!isChatting && (
           <>
             <Button text="See chat history" onClick={goToChatHistory} />
-            <Button text="Start new chat" />
+            <Button text="Start new chat" onClick={startNewChat} />
           </>
         )}
       </div>

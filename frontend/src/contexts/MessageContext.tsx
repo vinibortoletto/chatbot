@@ -25,6 +25,7 @@ interface IContext {
   setIsChatting: (isChatting: boolean) => void
   setChat: (chat: IChat) => void
   goToChatHistory: () => void
+  startNewChat: () => void
 }
 
 const defaultValues: IContext = {
@@ -35,7 +36,8 @@ const defaultValues: IContext = {
   createNewMessage: () => {},
   setIsChatting: () => {},
   setChat: () => {},
-  goToChatHistory: () => {}
+  goToChatHistory: () => {},
+  startNewChat: () => {}
 }
 
 const defaultChatValues: IChat = {
@@ -189,6 +191,11 @@ export function MessageProvider({ children }: IProps) {
     setIsChatting(true)
   }, [navigate])
 
+  const startNewChat = useCallback((): void => {
+    setIsChatting(true)
+    createNewChat()
+  }, [createNewChat])
+
   useEffect(() => {
     const localChat = handleLocalStorage.get('chat') as IChat
 
@@ -209,7 +216,8 @@ export function MessageProvider({ children }: IProps) {
       createNewMessage,
       setIsChatting,
       setChat,
-      goToChatHistory
+      goToChatHistory,
+      startNewChat
     }),
     [
       message,
@@ -219,7 +227,8 @@ export function MessageProvider({ children }: IProps) {
       createNewMessage,
       setIsChatting,
       setChat,
-      goToChatHistory
+      goToChatHistory,
+      startNewChat
     ]
   )
 
