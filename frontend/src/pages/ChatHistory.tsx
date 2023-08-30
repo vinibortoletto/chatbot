@@ -1,9 +1,12 @@
 import React, { useContext, useEffect } from 'react'
 import { MessageContext } from '../contexts/MessageContext'
 import { FaFileCsv } from 'react-icons/fa'
+import { Button } from '../components'
+import { useNavigate } from 'react-router-dom'
 
 export default function ChatHistory() {
-  const { chatHistory } = useContext(MessageContext)
+  const { chatHistory, startNewChat } = useContext(MessageContext)
+  const navigate = useNavigate()
 
   const formatDate = (date: Date): string => {
     const newDate = new Date(date)
@@ -28,6 +31,24 @@ export default function ChatHistory() {
         </div>
 
         <div className="p-4">
+          {chatHistory.length === 0 && (
+            <div className="text-center">
+              <h3 className="text-lg font-bold">No chat history</h3>
+              <h4 className="text-slate-500">
+                You have not ended any chat yet.
+              </h4>
+
+              <Button
+                className="mt-6"
+                text="Start new chat"
+                onClick={() => {
+                  navigate('/')
+                  startNewChat()
+                }}
+              />
+            </div>
+          )}
+
           <ul>
             {chatHistory.map((chat) => (
               <li
