@@ -3,6 +3,7 @@ import ChatHeader from '../components/ChatHeader'
 import MessageField from '../components/MessageField'
 import { MessageContext } from '../contexts/MessageContext'
 import MessageCard from '../components/MessageCard'
+import Button from '../components/Button'
 
 export default function Home() {
   const { chat, isChatting } = useContext(MessageContext)
@@ -33,19 +34,8 @@ export default function Home() {
       <div className="flex justify-center gap-2 p-4">
         {!isChatting && (
           <>
-            <button
-              type="button"
-              className="rounded-lg border border-sky-500 p-2 text-sky-500 transition hover:bg-sky-500/10"
-            >
-              See chat history
-            </button>
-
-            <button
-              type="button"
-              className="rounded-lg border border-sky-500 p-2 text-sky-500 transition hover:bg-sky-500/10"
-            >
-              Start new chat
-            </button>
+            <Button text="See chat history" />
+            <Button text="Start new chat" />
           </>
         )}
       </div>
