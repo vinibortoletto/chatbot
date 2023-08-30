@@ -10,7 +10,7 @@ export default function Button({ text, onClick, className }: IProps) {
   return (
     <button
       type="button"
-      className={`rounded-lg border border-sky-500 p-2 text-sky-500 transition hover:bg-sky-500/10 ${className}`}
+      className={`rounded-lg border border-sky-500 bg-white p-2 text-sky-500 transition hover:bg-sky-50 ${className}`}
       onClick={onClick}
     >
       {text}
