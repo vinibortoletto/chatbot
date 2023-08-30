@@ -116,23 +116,30 @@ export function MessageProvider({ children }: IProps) {
     })
   }, [message, triggerWords])
 
+  const isUserSayingGoodbye = (): boolean => {
+    return message.split(' ').some((messageWord) => {
+      if (messageWord.toLowerCase().includes('goodbye')) {
+        return true
+      }
+    })
+  }
+
+  const addNewMessageFromUser = (newChat: IChat): void => {
+    newChat.messages.push(createMessageObject('user', message))
+    setMessage('')
+  }
+
   const createNewMessage = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault()
-      const newChat = deepCopyObject(chat)
 
       if (message === '') return
 
-      newChat.messages.push(createMessageObject('user', message))
-      setMessage('')
+      const newChat = deepCopyObject(chat)
 
-      const hasGoodbye = message.split(' ').some((messageWord) => {
-        if (messageWord.toLowerCase().includes('goodbye')) {
-          return true
-        }
-      })
+      addNewMessageFromUser(newChat)
 
-      if (hasGoodbye) return handleGoodByeMessage(newChat)
+      if (isUserSayingGoodbye()) return handleGoodByeMessage(newChat)
 
       if (hasTriggerWord()) {
         newChat.messages.push(
