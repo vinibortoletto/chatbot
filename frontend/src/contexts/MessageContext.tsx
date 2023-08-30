@@ -126,6 +126,8 @@ export function MessageProvider({ children }: IProps) {
       event.preventDefault()
       const newChat = deepCopyObject(chat)
 
+      if (message === '') return
+
       newChat.messages.push(createMessageObject('user', message))
       setMessage('')
 
