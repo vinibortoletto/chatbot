@@ -26,6 +26,7 @@ interface IContext {
   setChat: (chat: IChat) => void
   goToChatHistory: () => void
   startNewChat: () => void
+  chatHistory: IChat[]
 }
 
 const defaultValues: IContext = {
@@ -37,7 +38,8 @@ const defaultValues: IContext = {
   setIsChatting: () => {},
   setChat: () => {},
   goToChatHistory: () => {},
-  startNewChat: () => {}
+  startNewChat: () => {},
+  chatHistory: []
 }
 
 const defaultChatValues: IChat = {
@@ -196,7 +198,20 @@ export function MessageProvider({ children }: IProps) {
     createNewChat()
   }, [createNewChat])
 
+  const getLocalChatHistory = (): void => {
+    const localChatHistory = handleLocalStorage.get('chatHistory') as IChat[]
+
+    if (localChatHistory) {
+      setChatHistory(localChatHistory)
+      return
+    }
+
+    handleLocalStorage.set('chatHistory', [] as IChat[])
+  }
+
   useEffect(() => {
+    getLocalChatHistory()
+
     const localChat = handleLocalStorage.get('chat') as IChat
 
     if (localChat) {
@@ -217,7 +232,8 @@ export function MessageProvider({ children }: IProps) {
       setIsChatting,
       setChat,
       goToChatHistory,
-      startNewChat
+      startNewChat,
+      chatHistory
     }),
     [
       message,
@@ -228,7 +244,8 @@ export function MessageProvider({ children }: IProps) {
       setIsChatting,
       setChat,
       goToChatHistory,
-      startNewChat
+      startNewChat,
+      chatHistory
     ]
   )
 
