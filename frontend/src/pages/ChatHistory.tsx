@@ -17,10 +17,6 @@ export default function ChatHistory() {
     return `${day}/${month}/${year} ${hour}:${minute}`
   }
 
-  useEffect(() => {
-    console.log(chatHistory)
-  }, [chatHistory])
-
   return (
     <main>
       <div>
