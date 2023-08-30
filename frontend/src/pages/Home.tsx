@@ -17,9 +17,9 @@ export default function Home() {
       <ChatHeader />
 
       <div
-        className={`flex h-[26rem] flex-col gap-1 overflow-y-scroll p-4 ${
-          !isChatting ? 'pb-16' : 'pb-4'
-        }`}
+        className={`flex ${
+          isChatting ? 'h-[60vh]' : 'h-[52vh]'
+        } flex-col gap-1 overflow-y-scroll p-4 `}
         ref={scrollableDivRef}
       >
         {chat.messages.map((message) => (
@@ -31,16 +31,16 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="absolute bottom-12 flex w-full justify-center gap-2 p-4">
+      <div>
         {!isChatting && (
-          <>
+          <div className="flex justify-center gap-2 py-2">
             <Button text="See chat history" onClick={goToChatHistory} />
             <Button text="Start new chat" onClick={startNewChat} />
-          </>
+          </div>
         )}
-      </div>
 
-      <MessageField />
+        <MessageField />
+      </div>
     </main>
   )
 }
