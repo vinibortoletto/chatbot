@@ -1,7 +1,6 @@
 import React from 'react'
 import { Route, Routes } from 'react-router-dom'
-import Home from '../pages/Home'
-import ChatHistory from '../pages/ChatHistory'
+import { ChatHistory, Home } from '../pages'
 
 export default function Routers() {
   return (
