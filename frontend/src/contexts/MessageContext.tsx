@@ -10,7 +10,6 @@ import { v4 as uuidv4 } from 'uuid'
 import { IChat, IMessage } from '../interfaces'
 import { TSender } from '../types'
 import { deepCopyObject, handleLocalStorage } from '../utils'
-import { useNavigate } from 'react-router-dom'
 
 interface IProps {
   children: React.ReactNode
@@ -50,8 +49,6 @@ const defaultChatValues: IChat = {
 export const MessageContext = createContext(defaultValues)
 
 export function MessageProvider({ children }: IProps) {
-  const navigate = useNavigate()
-
   const [message, setMessage] = useState('')
   const [chat, setChat] = useState<IChat>(defaultChatValues)
   const [chatHistory, setChatHistory] = useState<IChat[]>([])
