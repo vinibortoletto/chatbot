@@ -25,6 +25,9 @@ interface IContext {
   setChat: (chat: IChat) => void
   startNewChat: () => void
   chatHistory: IChat[]
+  isUserAskingAboutLoan: boolean
+  loanMessagesOptions: string[]
+  selectLoanOption: (option: string) => void
 }
 
 const defaultValues: IContext = {
@@ -36,7 +39,10 @@ const defaultValues: IContext = {
   setIsChatting: () => {},
   setChat: () => {},
   startNewChat: () => {},
-  chatHistory: []
+  chatHistory: [],
+  isUserAskingAboutLoan: false,
+  loanMessagesOptions: [],
+  selectLoanOption: () => {}
 }
 
 const defaultChatValues: IChat = {
@@ -58,7 +64,18 @@ export function MessageProvider({ children }: IProps) {
     password: ''
   })
   const [isAskingForUsername, setIsAskingForUsername] = useState(false)
+  const [isUserAskingAboutLoan, setIsUserAskingAboutLoan] = useState(false)
 
+  const [selectedLoanOption, setSelectedLoanOption] = useState('')
+
+  const loanMessagesOptions = useMemo(
+    () => [
+      '1. Do you want to apply for a loan?',
+      '2. Loan conditions',
+      '3. Help'
+    ],
+    []
+  )
   const triggerWords = useMemo(() => ['hello', 'good', 'goodbye', 'i want'], [])
 
   const companyMessages = useMemo(
@@ -150,6 +167,9 @@ export function MessageProvider({ children }: IProps) {
           createMessageObject('company', companyMessages.wrongMessage)
         )
       }
+
+      setChat(newChat)
+      handleLocalStorage.set('chat', newChat)
     },
     [
       companyMessages.askUsername,
@@ -184,7 +204,38 @@ export function MessageProvider({ children }: IProps) {
 
       if (isUserSayingGoodbye()) return handleGoodByeMessage(newChat)
 
-      if (!isAskingForUsername) askForUsername(newChat)
+      if (userCredentials.username && userCredentials.password) {
+        const newIsUserAskingAboutLoan = message.split(' ').some((word) => {
+          if (word.toLowerCase() === 'loan') {
+            return true
+          }
+        })
+
+        setIsUserAskingAboutLoan(newIsUserAskingAboutLoan)
+
+        if (!newIsUserAskingAboutLoan) {
+          newChat.messages.push(
+            createMessageObject('company', companyMessages.wrongMessage)
+          )
+
+          setChat(newChat)
+          handleLocalStorage.set('chat', newChat)
+          return
+        }
+
+        if (!selectedLoanOption) {
+          loanMessagesOptions.forEach((option) => {
+            newChat.messages.push(createMessageObject('company', option))
+          })
+
+          setChat(newChat)
+          handleLocalStorage.set('chat', newChat)
+
+          return
+        }
+      }
+
+      if (!isAskingForUsername) return askForUsername(newChat)
 
       if (!userCredentials.username) {
         setUsername()
@@ -212,12 +263,16 @@ export function MessageProvider({ children }: IProps) {
       addNewMessageFromUser,
       isUserSayingGoodbye,
       handleGoodByeMessage,
+      userCredentials.username,
+      userCredentials.password,
       isAskingForUsername,
       askForUsername,
-      userCredentials.username,
-      setUsername,
+      selectedLoanOption,
       createMessageObject,
+      companyMessages.wrongMessage,
       companyMessages.askPassword,
+      loanMessagesOptions,
+      setUsername,
       setUserPassword
     ]
   )
@@ -270,6 +325,58 @@ export function MessageProvider({ children }: IProps) {
     createNewChat()
   }, [createNewChat])
 
+  const selectLoanOption = useCallback(
+    (option: string): void => {
+      const newChat = deepCopyObject(chat)
+
+      if (option.includes('1')) {
+        newChat.messages.push(
+          createMessageObject(
+            'company',
+            'When applying for a loan, ensure you gather all necessary documents, accurately complete forms, and highlight your financial stability. A well-prepared application increases your chances of approval.'
+          ),
+          createMessageObject('company', 'https://lexartlabs.com/')
+        )
+
+        setChat(newChat)
+        handleLocalStorage.set('chat', newChat)
+
+        return
+      }
+
+      if (option.includes('2')) {
+        newChat.messages.push(
+          createMessageObject(
+            'company',
+            'Loan conditions encompass interest rates, repayment periods, and collateral requirements. Lenders set these terms, tailored to borrower creditworthiness. Clear understanding of conditions is crucial before committing to any loan agreement.'
+          ),
+          createMessageObject('company', 'https://lexartlabs.com/')
+        )
+
+        setChat(newChat)
+        handleLocalStorage.set('chat', newChat)
+
+        return
+      }
+
+      if (option.includes('3')) {
+        newChat.messages.push(
+          createMessageObject(
+            'company',
+            `Need assistance with loans? We're here to guide you. Explore options, understand terms, and make informed decisions. Achieve your financial goals with our expert support.`
+          ),
+          createMessageObject('company', 'https://lexartlabs.com/')
+        )
+
+        setChat(newChat)
+        handleLocalStorage.set('chat', newChat)
+
+        return
+      }
+    },
+    [chat, createMessageObject]
+  )
+
   const value: IContext = useMemo(
     () => ({
       message,
@@ -280,7 +387,10 @@ export function MessageProvider({ children }: IProps) {
       setIsChatting,
       setChat,
       startNewChat,
-      chatHistory
+      chatHistory,
+      isUserAskingAboutLoan,
+      loanMessagesOptions,
+      selectLoanOption
     }),
     [
       message,
@@ -291,7 +401,10 @@ export function MessageProvider({ children }: IProps) {
       setIsChatting,
       setChat,
       startNewChat,
-      chatHistory
+      chatHistory,
+      isUserAskingAboutLoan,
+      loanMessagesOptions,
+      selectLoanOption
     ]
   )
 

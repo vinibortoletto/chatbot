@@ -5,7 +5,8 @@ import { useNavigate } from 'react-router-dom'
 
 export default function Home() {
   const navigate = useNavigate()
-  const { chat, isChatting, startNewChat } = useContext(MessageContext)
+  const { chat, isChatting, startNewChat, loanMessagesOptions } =
+    useContext(MessageContext)
   const scrollableDivRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
@@ -23,13 +24,26 @@ export default function Home() {
         } flex-col gap-1 overflow-y-scroll p-4 `}
         ref={scrollableDivRef}
       >
-        {chat.messages.map((message) => (
-          <MessageCard
-            key={message.id}
-            content={message.content}
-            sender={message.sender}
-          />
-        ))}
+        {chat.messages.map((message) => {
+          if (loanMessagesOptions.includes(message.content)) {
+            return (
+              <MessageCard
+                key={message.id}
+                content={message.content}
+                sender={message.sender}
+                isLoanMessage
+              />
+            )
+          } else {
+            return (
+              <MessageCard
+                key={message.id}
+                content={message.content}
+                sender={message.sender}
+              />
+            )
+          }
+        })}
       </div>
 
       <div>
