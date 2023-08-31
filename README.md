@@ -1,4 +1,5 @@
 # Chatbot
+A simple chatbot that responds to specific commands.
 
 <p align="center">
   <a href="https://vini-recipes-app.vercel.app/">
@@ -18,28 +19,15 @@
 
 This project was created using the following stacks:
 
--  [React.js](https://reactjs.org/)
--  [TailwindCSS](https://tailwindcss.com/)
--  [VS Code](https://code.visualstudio.com/)
+- React.js
+- Typescript
+- TailwindCSS
+- MySQL/Sequelize
+- Node.js
 
 ## :information_source: How to use
 
-Run the commands bellow in a terminal:
-
-```bash
-# Clone repo
-git clone https://github.com/vinibortoletto/chatbot.git
-
-# Enter the project directory
-cd chatbot
-
-# Install the dependecies
-npm install
-
-# Start the app
-npm run dev
-
-```
+Choose <a href='https://github.com/vinibortoletto/chatbot/tree/frontend-integration'>front-end</a> or <a href='https://github.com/vinibortoletto/chatbot/tree/backend-integration'>full stack</a> version.
 
 <br/><br/>
 
