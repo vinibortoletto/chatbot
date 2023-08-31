@@ -12,8 +12,6 @@ export default class ChatController implements IChatController {
   ): Promise<Response | void> {
     try {
       const chats = await this._chatService.findAll();
-      console.log(chats);
-
       return res.status(OK).json(chats);
     } catch (error) {
       next(error);

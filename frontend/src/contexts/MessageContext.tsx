@@ -85,8 +85,6 @@ export function MessageProvider({ children }: IProps) {
       setIsChatting(false)
       saveChat(newChat)
 
-      console.log(newChat)
-
       try {
         await axios.post('http://localhost:3001/chats', {
           created_at: newChat.createdAt,
@@ -303,7 +301,6 @@ export function MessageProvider({ children }: IProps) {
 
     try {
       const { data } = await axios.get('http://localhost:3001/chats')
-      console.log(data)
 
       setChatHistory({
         ...data,
