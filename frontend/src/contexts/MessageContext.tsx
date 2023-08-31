@@ -7,7 +7,13 @@ import React, {
   useState
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { IChat, IMessage, IMessageContext, IUser } from '../interfaces'
+import {
+  IChat,
+  IChatResponse,
+  IMessage,
+  IMessageContext,
+  IUser
+} from '../interfaces'
 import { TSender } from '../types'
 import { deepCopyObject, handleLocalStorage } from '../utils'
 import {
@@ -306,23 +312,15 @@ export function MessageProvider({ children }: IProps) {
 
       const newChatHistory = [] as IChat[]
 
-      data.forEach(
-        (chat: {
-          id: number
-          messages: string
-          created_at: Date
-          ended_at: Date
-          username: string
-        }) => {
-          newChatHistory.push({
-            id: String(chat.id),
-            messages: JSON.parse(chat.messages),
-            createdAt: chat.created_at,
-            endedAt: chat.ended_at,
-            username: chat.username
-          })
-        }
-      )
+      data.forEach((chat: IChatResponse) => {
+        newChatHistory.push({
+          id: String(chat.id),
+          messages: JSON.parse(chat.messages),
+          createdAt: chat.created_at,
+          endedAt: chat.ended_at,
+          username: chat.username
+        })
+      })
 
       setChatHistory(newChatHistory as unknown as IChat[])
 
