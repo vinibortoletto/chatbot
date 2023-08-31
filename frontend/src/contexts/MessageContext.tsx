@@ -15,6 +15,7 @@ import {
   defaultMessageContextValues,
   defaultUserValues
 } from '../utils/defaultValues'
+import axios from 'axios'
 
 interface IProps {
   children: React.ReactNode
@@ -63,7 +64,7 @@ export function MessageProvider({ children }: IProps) {
   )
 
   const handleGoodByeMessage = useCallback(
-    (newChat: IChat) => {
+    async (newChat: IChat): Promise<void> => {
       newChat.messages.push(
         createMessageObject('company', 'Goodbye, have a nice day!'),
         createMessageObject(
@@ -73,6 +74,7 @@ export function MessageProvider({ children }: IProps) {
       )
 
       newChat.endedAt = new Date()
+      newChat.username = userCredentials.username
       setChatHistory([...chatHistory, newChat])
 
       handleLocalStorage.set('chatHistory', [
@@ -82,6 +84,20 @@ export function MessageProvider({ children }: IProps) {
 
       setIsChatting(false)
       saveChat(newChat)
+
+      console.log(newChat)
+
+      try {
+        await axios.post('http://localhost:3001/chats', {
+          created_at: newChat.createdAt,
+          ended_at: newChat.endedAt,
+          messages: JSON.stringify(newChat.messages),
+          username: newChat.username
+        })
+      } catch (error) {
+        console.log(error)
+      }
+
       return
     },
     [chatHistory, createMessageObject]
@@ -145,9 +161,10 @@ export function MessageProvider({ children }: IProps) {
     (newUserCredentials: IUser): void => {
       newUserCredentials.username = message
       setUserCredentials(newUserCredentials)
+      setChat({ ...chat, username: message })
       handleLocalStorage.set('user', newUserCredentials)
     },
-    [message]
+    [chat, message]
   )
 
   const setUserPassword = useCallback(
@@ -160,7 +177,7 @@ export function MessageProvider({ children }: IProps) {
   )
 
   const createNewMessage = useCallback(
-    (event: FormEvent<HTMLFormElement>): void => {
+    async (event: FormEvent<HTMLFormElement>): Promise<void> => {
       event.preventDefault()
 
       if (message === '') return
@@ -168,7 +185,10 @@ export function MessageProvider({ children }: IProps) {
       const newChat = deepCopyObject(chat)
       addNewMessageFromUser(newChat)
 
-      if (isUserSayingGoodbye()) return handleGoodByeMessage(newChat)
+      if (isUserSayingGoodbye()) {
+        await handleGoodByeMessage(newChat)
+        return
+      }
 
       if (userCredentials.username && userCredentials.password) {
         const newIsUserAskingAboutLoan = message.split(' ').some((word) => {
@@ -252,7 +272,7 @@ export function MessageProvider({ children }: IProps) {
       messages: [welcomeMessage],
       createdAt: new Date(),
       endedAt: null,
-      userId: 'user id'
+      username: ''
     }
 
     saveChat(newChat)
@@ -273,7 +293,7 @@ export function MessageProvider({ children }: IProps) {
     createNewChat()
   }, [createNewChat])
 
-  const getLocalChatHistory = (): void => {
+  const getLocalChatHistory = async (): Promise<void> => {
     const localChatHistory = handleLocalStorage.get('chatHistory') as IChat[]
 
     if (localChatHistory) {
@@ -281,7 +301,23 @@ export function MessageProvider({ children }: IProps) {
       return
     }
 
-    handleLocalStorage.set('chatHistory', [] as IChat[])
+    try {
+      const { data } = await axios.get('http://localhost:3001/chats')
+      console.log(data)
+
+      setChatHistory({
+        ...data,
+        id: data.id,
+        messages: JSON.parse(data.messages),
+        createdAt: data.created_at,
+        endedAt: data.ended_at,
+        username: data.username
+      })
+
+      handleLocalStorage.set('chatHistory', data as unknown as IChat[])
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   const getLocalUserCredentials = (): void => {

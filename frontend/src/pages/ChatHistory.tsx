@@ -6,8 +6,7 @@ import { Button } from '../components'
 import { MessageContext } from '../contexts/MessageContext'
 
 export default function ChatHistory() {
-  const { chatHistory, startNewChat, userCredentials } =
-    useContext(MessageContext)
+  const { chatHistory, startNewChat } = useContext(MessageContext)
   const navigate = useNavigate()
 
   const formatToCSV = (id: string) => {
@@ -76,7 +75,7 @@ export default function ChatHistory() {
               >
                 <div className="flex gap-2">
                   <span>
-                    {userCredentials.username} #{index + 1}
+                    {chat.username || 'Not found'} #{index + 1}
                   </span>
                   <span>-</span>
                   <span>{formatDate(chat.endedAt as Date)}</span>
