@@ -7,7 +7,7 @@ import React, {
   useState
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { IChat, IMessage, IUser } from '../interfaces'
+import { IChat, IMessage, IMessageContext, IUser } from '../interfaces'
 import { TSender } from '../types'
 import { deepCopyObject, handleLocalStorage } from '../utils'
 import {
@@ -355,7 +355,7 @@ export function MessageProvider({ children }: IProps) {
     [chat, createMessageObject]
   )
 
-  const value: IContext = useMemo(
+  const value: IMessageContext = useMemo(
     () => ({
       message,
       chat,
