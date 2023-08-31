@@ -5,5 +5,5 @@ export default interface IChat {
   messages: IMessage[]
   createdAt: Date
   endedAt: Date | null
-  userId: string
+  username: string
 }

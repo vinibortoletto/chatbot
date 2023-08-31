@@ -1,12 +1,15 @@
-import { useContext } from 'react'
+import { useCallback, useContext, useEffect } from 'react'
 import CsvDownloader from 'react-csv-downloader'
 import { FaFileCsv } from 'react-icons/fa'
 import { useNavigate } from 'react-router-dom'
 import { Button } from '../components'
 import { MessageContext } from '../contexts/MessageContext'
+import axios from 'axios'
+import { IChat } from '../interfaces'
+import { handleLocalStorage } from '../utils'
 
 export default function ChatHistory() {
-  const { chatHistory, startNewChat, userCredentials } =
+  const { chatHistory, startNewChat, setChatHistory } =
     useContext(MessageContext)
   const navigate = useNavigate()
 
@@ -38,6 +41,31 @@ export default function ChatHistory() {
 
     return `${day}/${month}/${year} ${hour}:${minute}`
   }
+
+  const getChatHistory = useCallback(async (): Promise<void> => {
+    try {
+      const { data } = await axios.get('http://localhost:3001/chats')
+
+      if (!data) return
+
+      setChatHistory({
+        ...data,
+        id: data.id,
+        messages: JSON.parse(data.messages),
+        createdAt: data.created_at,
+        endedAt: data.ended_at,
+        username: data.username
+      })
+
+      handleLocalStorage.set('chatHistory', data as unknown as IChat[])
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
+
+  useEffect(() => {
+    getChatHistory()
+  }, [getChatHistory])
 
   return (
     <main>
@@ -76,7 +104,7 @@ export default function ChatHistory() {
               >
                 <div className="flex gap-2">
                   <span>
-                    {userCredentials.username} #{index + 1}
+                    {chat.username || 'Not found'} #{index + 1}
                   </span>
                   <span>-</span>
                   <span>{formatDate(chat.endedAt as Date)}</span>
