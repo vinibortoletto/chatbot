@@ -181,23 +181,23 @@ export function MessageProvider({ children }: IProps) {
     ]
   )
 
-  const setUsername = useCallback((): void => {
-    setUserCredentials({
-      ...userCredentials,
-      username: message
-    })
+  const setUsername = useCallback(
+    (newUserCredentials: IUser): void => {
+      newUserCredentials.username = message
+      setUserCredentials(newUserCredentials)
+      handleLocalStorage.set('user', newUserCredentials)
+    },
+    [message]
+  )
 
-    handleLocalStorage.set('user', userCredentials)
-  }, [message, userCredentials])
-
-  const setUserPassword = useCallback((): void => {
-    setUserCredentials({
-      ...userCredentials,
-      password: message
-    })
-
-    handleLocalStorage.set('user', userCredentials)
-  }, [message, userCredentials])
+  const setUserPassword = useCallback(
+    (newUserCredentials: IUser): void => {
+      newUserCredentials.password = message
+      setUserCredentials(newUserCredentials)
+      handleLocalStorage.set('user', newUserCredentials)
+    },
+    [message]
+  )
 
   const createNewMessage = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
@@ -238,13 +238,17 @@ export function MessageProvider({ children }: IProps) {
 
       if (!isAskingForUsername) return askForUsername(newChat)
 
+      const newUserCredentials = { ...userCredentials }
+
       if (!userCredentials.username) {
-        setUsername()
+        setUsername(newUserCredentials)
+
         newChat.messages.push(
           createMessageObject('company', companyMessages.askPassword)
         )
       } else {
-        setUserPassword()
+        setUserPassword(newUserCredentials)
+
         newChat.messages.push(
           createMessageObject(
             'company',
@@ -263,14 +267,13 @@ export function MessageProvider({ children }: IProps) {
       addNewMessageFromUser,
       isUserSayingGoodbye,
       handleGoodByeMessage,
-      userCredentials.username,
-      userCredentials.password,
+      userCredentials,
       isAskingForUsername,
       askForUsername,
+      loanMessagesOptions,
       createMessageObject,
       companyMessages.wrongMessage,
       companyMessages.askPassword,
-      loanMessagesOptions,
       setUsername,
       setUserPassword
     ]
@@ -302,6 +305,11 @@ export function MessageProvider({ children }: IProps) {
 
   const startNewChat = useCallback((): void => {
     setIsChatting(true)
+    setIsAskingForUsername(false)
+    setIsUserAskingAboutLoan(false)
+
+    setUserCredentials(defaultUserValues)
+    handleLocalStorage.set('user', defaultUserValues)
     createNewChat()
   }, [createNewChat])
 
