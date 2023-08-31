@@ -53,6 +53,10 @@ export function MessageProvider({ children }: IProps) {
   const [chat, setChat] = useState<IChat>(defaultChatValues)
   const [chatHistory, setChatHistory] = useState<IChat[]>([])
   const [isChatting, setIsChatting] = useState(true)
+  const [userCredentials, setUserCredentials] = useState({
+    username: '',
+    password: ''
+  })
 
   const triggerWords = useMemo(() => ['hello', 'good', 'goodbye', 'i want'], [])
 
@@ -132,6 +136,26 @@ export function MessageProvider({ children }: IProps) {
     [createMessageObject, message]
   )
 
+  const askForUsername = useCallback(
+    (newChat: IChat): void => {
+      if (hasTriggerWord()) {
+        newChat.messages.push(
+          createMessageObject('company', companyMessages.askUsername)
+        )
+      } else {
+        newChat.messages.push(
+          createMessageObject('company', companyMessages.wrongMessage)
+        )
+      }
+    },
+    [
+      companyMessages.askUsername,
+      companyMessages.wrongMessage,
+      createMessageObject,
+      hasTriggerWord
+    ]
+  )
+
   const createNewMessage = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault()
@@ -144,29 +168,19 @@ export function MessageProvider({ children }: IProps) {
 
       if (isUserSayingGoodbye()) return handleGoodByeMessage(newChat)
 
-      if (hasTriggerWord()) {
-        newChat.messages.push(
-          createMessageObject('company', companyMessages.askUsername)
-        )
-      } else {
-        newChat.messages.push(
-          createMessageObject('company', companyMessages.wrongMessage)
-        )
-      }
+      if (userCredentials.username === '') askForUsername(newChat)
 
       setChat(newChat)
       handleLocalStorage.set('chat', newChat)
     },
     [
-      addNewMessageFromUser,
-      chat,
-      companyMessages.askUsername,
-      companyMessages.wrongMessage,
       message,
-      createMessageObject,
+      chat,
+      userCredentials.username,
+      addNewMessageFromUser,
+      isUserSayingGoodbye,
       handleGoodByeMessage,
-      hasTriggerWord,
-      isUserSayingGoodbye
+      askForUsername
     ]
   )
 
