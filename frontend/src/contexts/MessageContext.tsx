@@ -57,6 +57,7 @@ export function MessageProvider({ children }: IProps) {
     username: '',
     password: ''
   })
+  const [isAskingForUsername, setIsAskingForUsername] = useState(false)
 
   const triggerWords = useMemo(() => ['hello', 'good', 'goodbye', 'i want'], [])
 
@@ -142,6 +143,8 @@ export function MessageProvider({ children }: IProps) {
         newChat.messages.push(
           createMessageObject('company', companyMessages.askUsername)
         )
+
+        setIsAskingForUsername(true)
       } else {
         newChat.messages.push(
           createMessageObject('company', companyMessages.wrongMessage)
@@ -156,6 +159,20 @@ export function MessageProvider({ children }: IProps) {
     ]
   )
 
+  const setUsername = useCallback((): void => {
+    setUserCredentials({
+      ...userCredentials,
+      username: message
+    })
+  }, [message, userCredentials])
+
+  const setUserPassword = useCallback((): void => {
+    setUserCredentials({
+      ...userCredentials,
+      password: message
+    })
+  }, [message, userCredentials])
+
   const createNewMessage = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
       event.preventDefault()
@@ -163,12 +180,28 @@ export function MessageProvider({ children }: IProps) {
       if (message === '') return
 
       const newChat = deepCopyObject(chat)
-
       addNewMessageFromUser(newChat)
 
       if (isUserSayingGoodbye()) return handleGoodByeMessage(newChat)
 
-      if (userCredentials.username === '') askForUsername(newChat)
+      if (!isAskingForUsername) askForUsername(newChat)
+
+      if (!userCredentials.username) {
+        setUsername()
+        newChat.messages.push(
+          createMessageObject('company', companyMessages.askPassword)
+        )
+      } else {
+        setUserPassword()
+        newChat.messages.push(
+          createMessageObject(
+            'company',
+            `All set ${userCredentials.username}! How can I help you today?`
+          )
+        )
+
+        setIsAskingForUsername(false)
+      }
 
       setChat(newChat)
       handleLocalStorage.set('chat', newChat)
@@ -176,11 +209,16 @@ export function MessageProvider({ children }: IProps) {
     [
       message,
       chat,
-      userCredentials.username,
       addNewMessageFromUser,
       isUserSayingGoodbye,
       handleGoodByeMessage,
-      askForUsername
+      isAskingForUsername,
+      askForUsername,
+      userCredentials.username,
+      setUsername,
+      createMessageObject,
+      companyMessages.askPassword,
+      setUserPassword
     ]
   )
 
