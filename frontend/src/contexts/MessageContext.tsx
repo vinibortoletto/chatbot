@@ -66,8 +66,6 @@ export function MessageProvider({ children }: IProps) {
   const [isAskingForUsername, setIsAskingForUsername] = useState(false)
   const [isUserAskingAboutLoan, setIsUserAskingAboutLoan] = useState(false)
 
-  const [selectedLoanOption, setSelectedLoanOption] = useState('')
-
   const loanMessagesOptions = useMemo(
     () => [
       '1. Do you want to apply for a loan?',
@@ -223,16 +221,14 @@ export function MessageProvider({ children }: IProps) {
           return
         }
 
-        if (!selectedLoanOption) {
-          loanMessagesOptions.forEach((option) => {
-            newChat.messages.push(createMessageObject('company', option))
-          })
+        loanMessagesOptions.forEach((option) => {
+          newChat.messages.push(createMessageObject('company', option))
+        })
 
-          setChat(newChat)
-          handleLocalStorage.set('chat', newChat)
+        setChat(newChat)
+        handleLocalStorage.set('chat', newChat)
 
-          return
-        }
+        return
       }
 
       if (!isAskingForUsername) return askForUsername(newChat)
@@ -267,7 +263,6 @@ export function MessageProvider({ children }: IProps) {
       userCredentials.password,
       isAskingForUsername,
       askForUsername,
-      selectedLoanOption,
       createMessageObject,
       companyMessages.wrongMessage,
       companyMessages.askPassword,
