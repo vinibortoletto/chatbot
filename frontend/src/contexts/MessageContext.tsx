@@ -10,57 +10,17 @@ import { v4 as uuidv4 } from 'uuid'
 import { IChat, IMessage, IUser } from '../interfaces'
 import { TSender } from '../types'
 import { deepCopyObject, handleLocalStorage } from '../utils'
+import {
+  defaultChatValues,
+  defaultMessageContextValues,
+  defaultUserValues
+} from '../utils/defaultValues'
 
 interface IProps {
   children: React.ReactNode
 }
 
-interface IContext {
-  message: string
-  chat: IChat
-  isChatting: boolean
-  setMessage: (message: string) => void
-  createNewMessage: (event: FormEvent<HTMLFormElement>) => void
-  setIsChatting: (isChatting: boolean) => void
-  setChat: (chat: IChat) => void
-  startNewChat: () => void
-  chatHistory: IChat[]
-  isUserAskingAboutLoan: boolean
-  loanMessagesOptions: string[]
-  selectLoanOption: (option: string) => void
-  userCredentials: IUser
-}
-
-const defaultUserValues: IUser = {
-  username: '',
-  password: ''
-}
-
-const defaultValues: IContext = {
-  message: '',
-  chat: {} as IChat,
-  isChatting: true,
-  setMessage: () => {},
-  createNewMessage: () => {},
-  setIsChatting: () => {},
-  setChat: () => {},
-  startNewChat: () => {},
-  chatHistory: [],
-  isUserAskingAboutLoan: false,
-  loanMessagesOptions: [],
-  selectLoanOption: () => {},
-  userCredentials: defaultUserValues
-}
-
-const defaultChatValues: IChat = {
-  id: '',
-  messages: [] as IMessage[],
-  createdAt: new Date(),
-  endedAt: null,
-  userId: ''
-}
-
-export const MessageContext = createContext(defaultValues)
+export const MessageContext = createContext(defaultMessageContextValues)
 
 export function MessageProvider({ children }: IProps) {
   const [message, setMessage] = useState('')
