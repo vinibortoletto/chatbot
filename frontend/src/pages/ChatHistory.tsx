@@ -6,7 +6,8 @@ import { Button } from '../components'
 import { MessageContext } from '../contexts/MessageContext'
 
 export default function ChatHistory() {
-  const { chatHistory, startNewChat } = useContext(MessageContext)
+  const { chatHistory, startNewChat, userCredentials } =
+    useContext(MessageContext)
   const navigate = useNavigate()
 
   const formatToCSV = (id: string) => {
@@ -68,12 +69,18 @@ export default function ChatHistory() {
           )}
 
           <ul>
-            {chatHistory.map((chat) => (
+            {chatHistory.map((chat, index) => (
               <li
                 className="flex justify-between rounded-lg p-2 odd:bg-slate-200"
                 key={chat.id}
               >
-                <span>{formatDate(chat.createdAt)}</span>
+                <div className="flex gap-2">
+                  <span>
+                    {userCredentials.username} #{index + 1}
+                  </span>
+                  <span>-</span>
+                  <span>{formatDate(chat.endedAt as Date)}</span>
+                </div>
 
                 <span>
                   <CsvDownloader
