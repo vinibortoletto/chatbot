@@ -116,18 +116,21 @@ export function MessageProvider({ children }: IProps) {
     })
   }, [message, triggerWords])
 
-  const isUserSayingGoodbye = (): boolean => {
+  const isUserSayingGoodbye = useCallback((): boolean => {
     return message.split(' ').some((messageWord) => {
       if (messageWord.toLowerCase().includes('goodbye')) {
         return true
       }
     })
-  }
+  }, [message])
 
-  const addNewMessageFromUser = (newChat: IChat): void => {
-    newChat.messages.push(createMessageObject('user', message))
-    setMessage('')
-  }
+  const addNewMessageFromUser = useCallback(
+    (newChat: IChat): void => {
+      newChat.messages.push(createMessageObject('user', message))
+      setMessage('')
+    },
+    [createMessageObject, message]
+  )
 
   const createNewMessage = useCallback(
     (event: FormEvent<HTMLFormElement>): void => {
@@ -155,13 +158,15 @@ export function MessageProvider({ children }: IProps) {
       handleLocalStorage.set('chat', newChat)
     },
     [
+      addNewMessageFromUser,
       chat,
       companyMessages.askUsername,
       companyMessages.wrongMessage,
+      message,
       createMessageObject,
       handleGoodByeMessage,
       hasTriggerWord,
-      message
+      isUserSayingGoodbye
     ]
   )
 
