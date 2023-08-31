@@ -15,6 +15,7 @@ import {
   defaultMessageContextValues,
   defaultUserValues
 } from '../utils/defaultValues'
+import { useNavigate } from 'react-router-dom'
 
 interface IProps {
   children: React.ReactNode
@@ -23,6 +24,7 @@ interface IProps {
 export const MessageContext = createContext(defaultMessageContextValues)
 
 export function MessageProvider({ children }: IProps) {
+  const navigate = useNavigate()
   const [message, setMessage] = useState('')
   const [chat, setChat] = useState<IChat>(defaultChatValues)
   const [chatHistory, setChatHistory] = useState<IChat[]>([])
@@ -295,6 +297,11 @@ export function MessageProvider({ children }: IProps) {
     handleLocalStorage.set('user', {})
   }
 
+  const goToChatHistory = useCallback((): void => {
+    navigate('/chat-history')
+    setIsChatting(false)
+  }, [])
+
   useEffect(() => {
     getLocalChatHistory()
     getLocalUserCredentials()
@@ -369,7 +376,8 @@ export function MessageProvider({ children }: IProps) {
       isUserAskingAboutLoan,
       loanMessagesOptions,
       selectLoanOption,
-      userCredentials
+      userCredentials,
+      goToChatHistory
     }),
     [
       message,
@@ -384,7 +392,8 @@ export function MessageProvider({ children }: IProps) {
       isUserAskingAboutLoan,
       loanMessagesOptions,
       selectLoanOption,
-      userCredentials
+      userCredentials,
+      goToChatHistory
     ]
   )
 

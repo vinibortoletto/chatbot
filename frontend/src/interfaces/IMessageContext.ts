@@ -16,4 +16,5 @@ export default interface IMessageContext {
   loanMessagesOptions: string[]
   selectLoanOption: (option: string) => void
   userCredentials: IUser
+  goToChatHistory: () => void
 }

@@ -18,7 +18,8 @@ export const defaultMessageContextValues: IMessageContext = {
   isUserAskingAboutLoan: false,
   loanMessagesOptions: [],
   selectLoanOption: () => {},
-  userCredentials: defaultUserValues
+  userCredentials: defaultUserValues,
+  goToChatHistory: () => {}
 }
 
 export const defaultChatValues: IChat = {
