@@ -2,7 +2,7 @@
 A simple chatbot that responds to specific commands.
 
 <p align="center">
-  <a href="https://vini-recipes-app.vercel.app/">
+  <a href="https://vb-chatbot-app.vercel.app/">
     <img width=300 alt="website mockup" src="https://i.imgur.com/ELdz4Lx.png" />
     <img width=300 alt="website mockup" src="https://i.imgur.com/pBMiqhc.png" />
     <img width=300 alt="website mockup" src="https://i.imgur.com/28PtPQK.png" />
