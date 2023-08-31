@@ -7,7 +7,7 @@ import React, {
   useState
 } from 'react'
 import { v4 as uuidv4 } from 'uuid'
-import { IChat, IMessage } from '../interfaces'
+import { IChat, IMessage, IUser } from '../interfaces'
 import { TSender } from '../types'
 import { deepCopyObject, handleLocalStorage } from '../utils'
 
@@ -28,6 +28,12 @@ interface IContext {
   isUserAskingAboutLoan: boolean
   loanMessagesOptions: string[]
   selectLoanOption: (option: string) => void
+  userCredentials: IUser
+}
+
+const defaultUserValues: IUser = {
+  username: '',
+  password: ''
 }
 
 const defaultValues: IContext = {
@@ -42,13 +48,15 @@ const defaultValues: IContext = {
   chatHistory: [],
   isUserAskingAboutLoan: false,
   loanMessagesOptions: [],
-  selectLoanOption: () => {}
+  selectLoanOption: () => {},
+  userCredentials: defaultUserValues
 }
 
 const defaultChatValues: IChat = {
   id: '',
   messages: [] as IMessage[],
   createdAt: new Date(),
+  endedAt: null,
   userId: ''
 }
 
@@ -59,10 +67,7 @@ export function MessageProvider({ children }: IProps) {
   const [chat, setChat] = useState<IChat>(defaultChatValues)
   const [chatHistory, setChatHistory] = useState<IChat[]>([])
   const [isChatting, setIsChatting] = useState(true)
-  const [userCredentials, setUserCredentials] = useState({
-    username: '',
-    password: ''
-  })
+  const [userCredentials, setUserCredentials] = useState(defaultUserValues)
   const [isAskingForUsername, setIsAskingForUsername] = useState(false)
   const [isUserAskingAboutLoan, setIsUserAskingAboutLoan] = useState(false)
 
@@ -107,6 +112,7 @@ export function MessageProvider({ children }: IProps) {
         )
       )
 
+      newChat.endedAt = new Date()
       setChatHistory([...chatHistory, newChat])
 
       handleLocalStorage.set('chatHistory', [
@@ -180,6 +186,8 @@ export function MessageProvider({ children }: IProps) {
       ...userCredentials,
       username: message
     })
+
+    handleLocalStorage.set('user', userCredentials)
   }, [message, userCredentials])
 
   const setUserPassword = useCallback((): void => {
@@ -187,6 +195,8 @@ export function MessageProvider({ children }: IProps) {
       ...userCredentials,
       password: message
     })
+
+    handleLocalStorage.set('user', userCredentials)
   }, [message, userCredentials])
 
   const createNewMessage = useCallback(
@@ -278,6 +288,7 @@ export function MessageProvider({ children }: IProps) {
       id: uuidv4(),
       messages: [welcomeMessage],
       createdAt: new Date(),
+      endedAt: null,
       userId: 'user id'
     }
 
@@ -305,8 +316,20 @@ export function MessageProvider({ children }: IProps) {
     handleLocalStorage.set('chatHistory', [] as IChat[])
   }
 
+  const getLocalUserCredentials = (): void => {
+    const localUserCredentials = handleLocalStorage.get('user') as IUser
+
+    if (localUserCredentials) {
+      setUserCredentials(localUserCredentials)
+      return
+    }
+
+    handleLocalStorage.set('user', {})
+  }
+
   useEffect(() => {
     getLocalChatHistory()
+    getLocalUserCredentials()
 
     const localChat = handleLocalStorage.get('chat') as IChat
 
@@ -377,7 +400,8 @@ export function MessageProvider({ children }: IProps) {
       chatHistory,
       isUserAskingAboutLoan,
       loanMessagesOptions,
-      selectLoanOption
+      selectLoanOption,
+      userCredentials
     }),
     [
       message,
@@ -391,7 +415,8 @@ export function MessageProvider({ children }: IProps) {
       chatHistory,
       isUserAskingAboutLoan,
       loanMessagesOptions,
-      selectLoanOption
+      selectLoanOption,
+      userCredentials
     ]
   )
 
