@@ -36,9 +36,15 @@ Enter the project directory
 ```bash
 cd chatbot
 ```
+
 Change branches
 ```bash
 git checkout backend-integration
+```
+
+Run docker compose for db
+```bash
+docker-compose up -d
 ```
 
 Install dependecies and run front end
