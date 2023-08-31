@@ -98,7 +98,7 @@ export function MessageProvider({ children }: IProps) {
 
       return
     },
-    [chatHistory, createMessageObject]
+    [chatHistory, createMessageObject, userCredentials.username]
   )
 
   const hasTriggerWord = useCallback((): boolean => {
@@ -302,14 +302,29 @@ export function MessageProvider({ children }: IProps) {
     try {
       const { data } = await axios.get('http://localhost:3001/chats')
 
-      setChatHistory({
-        ...data,
-        id: data.id,
-        messages: JSON.parse(data.messages),
-        createdAt: data.created_at,
-        endedAt: data.ended_at,
-        username: data.username
-      })
+      if (!data) return
+
+      const newChatHistory = [] as IChat[]
+
+      data.forEach(
+        (chat: {
+          id: number
+          messages: string
+          created_at: Date
+          ended_at: Date
+          username: string
+        }) => {
+          newChatHistory.push({
+            id: String(chat.id),
+            messages: JSON.parse(chat.messages),
+            createdAt: chat.created_at,
+            endedAt: chat.ended_at,
+            username: chat.username
+          })
+        }
+      )
+
+      setChatHistory(newChatHistory as unknown as IChat[])
 
       handleLocalStorage.set('chatHistory', data as unknown as IChat[])
     } catch (error) {
@@ -402,7 +417,8 @@ export function MessageProvider({ children }: IProps) {
       isUserAskingAboutLoan,
       loanMessagesOptions,
       selectLoanOption,
-      userCredentials
+      userCredentials,
+      setChatHistory
     }),
     [
       message,
@@ -417,7 +433,8 @@ export function MessageProvider({ children }: IProps) {
       isUserAskingAboutLoan,
       loanMessagesOptions,
       selectLoanOption,
-      userCredentials
+      userCredentials,
+      setChatHistory
     ]
   )
 
