@@ -115,8 +115,7 @@ export function MessageProvider({ children }: IProps) {
       ] as IChat[])
 
       setIsChatting(false)
-      setChat(newChat)
-      handleLocalStorage.remove('chat')
+      saveChat(newChat)
       return
     },
     [chatHistory, createMessageObject]
@@ -166,8 +165,7 @@ export function MessageProvider({ children }: IProps) {
         )
       }
 
-      setChat(newChat)
-      handleLocalStorage.set('chat', newChat)
+      saveChat(newChat)
     },
     [
       companyMessages.askUsername,
@@ -216,8 +214,7 @@ export function MessageProvider({ children }: IProps) {
             createMessageObject('company', companyMessages.wrongMessage)
           )
 
-          setChat(newChat)
-          handleLocalStorage.set('chat', newChat)
+          saveChat(newChat)
           return
         }
 
@@ -225,9 +222,7 @@ export function MessageProvider({ children }: IProps) {
           newChat.messages.push(createMessageObject('company', option))
         })
 
-        setChat(newChat)
-        handleLocalStorage.set('chat', newChat)
-
+        saveChat(newChat)
         return
       }
 
@@ -250,8 +245,7 @@ export function MessageProvider({ children }: IProps) {
         setIsAskingForUsername(false)
       }
 
-      setChat(newChat)
-      handleLocalStorage.set('chat', newChat)
+      saveChat(newChat)
     },
     [
       message,
@@ -287,9 +281,13 @@ export function MessageProvider({ children }: IProps) {
       userId: 'user id'
     }
 
+    saveChat(newChat)
+  }, [])
+
+  const saveChat = (newChat: IChat): void => {
     setChat(newChat)
     handleLocalStorage.set('chat', newChat)
-  }, [])
+  }
 
   const startNewChat = useCallback((): void => {
     setIsChatting(true)
@@ -333,9 +331,7 @@ export function MessageProvider({ children }: IProps) {
           createMessageObject('company', 'https://lexartlabs.com/')
         )
 
-        setChat(newChat)
-        handleLocalStorage.set('chat', newChat)
-
+        saveChat(newChat)
         return
       }
 
@@ -348,9 +344,7 @@ export function MessageProvider({ children }: IProps) {
           createMessageObject('company', 'https://lexartlabs.com/')
         )
 
-        setChat(newChat)
-        handleLocalStorage.set('chat', newChat)
-
+        saveChat(newChat)
         return
       }
 
@@ -363,9 +357,7 @@ export function MessageProvider({ children }: IProps) {
           createMessageObject('company', 'https://lexartlabs.com/')
         )
 
-        setChat(newChat)
-        handleLocalStorage.set('chat', newChat)
-
+        saveChat(newChat)
         return
       }
     },
