@@ -35,6 +35,7 @@ git clone https://github.com/vinibortoletto/chatbot.git
 Enter the project directory
 ```bash
 cd chatbot
+
 ```
 Change branches
 ```bash
@@ -43,7 +44,7 @@ git checkout frontend-integration
 
 Install the dependecies
 ```bash
-npm install
+cd frontend && npm install
 ```
 
 Start the app
